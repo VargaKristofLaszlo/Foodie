@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foodie.Web", "Foodie\Foodie.Web.csproj", "{F48F2537-A6DA-46CF-AC57-B7E5CC064418}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foodie.Dal", "Foodie.Dal\Foodie.Dal.csproj", "{F6AC66FB-4943-4C08-8536-070843D5BEA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foodie.BL", "Foodie.BL\Foodie.BL.csproj", "{4BB4A2B6-754B-45FD-82B3-84B95E0763A4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F48F2537-A6DA-46CF-AC57-B7E5CC064418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F48F2537-A6DA-46CF-AC57-B7E5CC064418}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F48F2537-A6DA-46CF-AC57-B7E5CC064418}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F48F2537-A6DA-46CF-AC57-B7E5CC064418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6AC66FB-4943-4C08-8536-070843D5BEA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6AC66FB-4943-4C08-8536-070843D5BEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6AC66FB-4943-4C08-8536-070843D5BEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6AC66FB-4943-4C08-8536-070843D5BEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BB4A2B6-754B-45FD-82B3-84B95E0763A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BB4A2B6-754B-45FD-82B3-84B95E0763A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BB4A2B6-754B-45FD-82B3-84B95E0763A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BB4A2B6-754B-45FD-82B3-84B95E0763A4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {50F8BF95-6BAE-4DC1-BFE1-BA06B2CB50A1}
+	EndGlobalSection
+EndGlobal
