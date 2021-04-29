@@ -14,13 +14,15 @@ namespace Foodie.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly Foodie.Dal.FoodieDbContext dbContext;
 
         public IndexModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager, Dal.FoodieDbContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            this.dbContext = dbContext;
         }
 
         public string Username { get; set; }
@@ -30,6 +32,9 @@ namespace Foodie.Web.Areas.Identity.Pages.Account.Manage
 
         [BindProperty]
         public InputModel Input { get; set; }
+
+        [BindProperty]
+        public bool IsSubscribed { get; set; }
 
         public class InputModel
         {
@@ -44,7 +49,7 @@ namespace Foodie.Web.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
-
+            this.IsSubscribed = user.Subscribed;
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber
@@ -62,6 +67,21 @@ namespace Foodie.Web.Areas.Identity.Pages.Account.Manage
             await LoadAsync(user);
             return Page();
         }
+
+        public async Task<IActionResult> OnPostSubscribeStateChanged()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            user.Subscribed = this.IsSubscribed;
+            await dbContext.SaveChangesAsync();
+
+            return Page();
+        }
+
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -92,5 +112,6 @@ namespace Foodie.Web.Areas.Identity.Pages.Account.Manage
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
+
     }
 }

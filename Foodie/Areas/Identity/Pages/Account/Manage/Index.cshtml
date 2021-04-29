@@ -20,9 +20,27 @@
                 <input asp-for="Input.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
+            <button id="update-profile-button" type="submit" class="btn btn-primary mb-4">Save</button>
+        </form>
+
+        <div class="d-flex justify-content-between mb-3">
+            <a class="btn btn-primary" style="color:white" asp-page="ChangePassword">Change your password</a>
+            <a class="btn btn-primary" style="color:white" asp-page="Email">Change your email address</a>
+        </div>
+
+
+        <form method="post">
+            <div class="form-group">
+                <div class="form-check form-switch pl-5">
+                    <input class="form-check-input" type="checkbox" id="subscribeState" value="true"
+                           name="IsSubscribed" checked="@Model.IsSubscribed">
+                    <label class="form-check-label" for="subscribeState">You can change your subscription state here</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" asp-page-handler="SubscribeStateChanged">Save</button>
         </form>
     </div>
+
 </div>
 
 @section Scripts {

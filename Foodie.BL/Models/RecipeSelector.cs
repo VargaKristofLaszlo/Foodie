@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Foodie.BL.Models
 {
-    public class RecipeGetFilter
+    public class RecipeSelector
     {
-        public int PageNumber { get; set; } = default;
+        public int PageNumber { get; set; } = 0;
         public int PageSize { get; set; } = 5;
-        public List<string> IngredientNames { get; set; } = default;
-        public int CategoryFilter { get; set; } = default;
+        public List<string> IngredientNames { get; set; } = null;
+        public int CategoryFilter { get; set; } = 0;
         public int CookingTimeFilter { get; set; } = default;
         public int PreparationTimeFilter { get; set; } = default;
     }

@@ -1,7 +1,6 @@
 ﻿using Foodie.BL.Models;
 using Foodie.Dal.DTOs;
 using Refit;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Foodie.Web.IApi
@@ -12,7 +11,7 @@ namespace Foodie.Web.IApi
         Task<PagedResult<RecipePreview>> GetRecipePreviewsAsync([Body] RecipeGetFilter filter);
 
         [Get("/{id}")]
-        Task<RecipePreview> GetAsync(int id);
+        Task<RecipeDetails> GetAsync(int id);
 
         [Post("")]
         Task Post([Body] RecipeDetails recipeDetails);

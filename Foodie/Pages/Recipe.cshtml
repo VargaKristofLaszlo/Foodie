@@ -3,4 +3,37 @@
 @{
 }
 
-<h1>This will be for the recipe</h1>
+<div class="row">
+    <div class="col-lg-3">
+        <img src="~/images/@(Model.Id).PNG" title="@Model.RecipeDetails.Name" alt="@Model.RecipeDetails.Name" />
+        <h6>Preparation time: @(new System.TimeSpan(0, 0, Model.RecipeDetails.PreparationTime))</h6>
+        <h6>Cooking time: @(new System.TimeSpan(0, 0, Model.RecipeDetails.CookingTime))</h6>
+    </div>
+    <div class="col-lg-9">
+        <row>
+            <row class="h-100">
+                <h2 class="my-auto">Ingredients:</h2>
+                <div class="d-flex justify-content-center pr-">
+                    <ul>
+                        @foreach (var ingredient in Model.RecipeDetails.Ingredients)
+                        {
+                            <li>@ingredient.Amount  @ingredient.Measurement.ValueToString()  @ingredient.Name</li>
+                        }
+                    </ul>
+                </div>
+            </row>
+            <h2 class="pb-2">Instructions:</h2>
+            <div class="d-flex justify-content-center">
+                <ol>
+                    @foreach (var instruction in Model.RecipeDetails.Instruction)
+                    {
+                        <li class="pl-2">@instruction</li>
+                    }
+                </ol>
+            </div>
+        </row>
+    </div>
+</div>
+
+
+

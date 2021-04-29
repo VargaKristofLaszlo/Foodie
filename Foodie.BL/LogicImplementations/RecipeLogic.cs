@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Foodie.BL.Exceptions;
 using Foodie.BL.Models;
 using Foodie.BL.ServiceInterfaces;
 using Foodie.Dal.DTOs;
@@ -45,12 +46,18 @@ namespace Foodie.BL.LogicImplementations
             {
                 ingredientFilterFunc = recipe =>
                 {
-                    var ingredientNames = recipe.Ingredients.Select(i => i.Name.ToLower());
-
-                    foreach (var name in getFilter.IngredientNames)
+                    foreach (var filterIngredient in getFilter.IngredientNames)
                     {
-                        if (ingredientNames.Contains(name.ToLower()) == false)
-                            return false;
+                        bool found = false;
+                        foreach (var recipeIngredient in recipe.Ingredients)
+                        {
+                            if (recipeIngredient.Name.Contains(filterIngredient, StringComparison.OrdinalIgnoreCase))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) return false;
                     }
                     return true;
                 };
@@ -85,6 +92,9 @@ namespace Foodie.BL.LogicImplementations
         public async Task<RecipeDetails> GetAsync(int id)
         {
             var result = await recipeService.GetAsync(id);
+
+            if (result == null)
+                throw new NotFoundException();
 
             return mapper.Map<RecipeDetails>(result);
         }

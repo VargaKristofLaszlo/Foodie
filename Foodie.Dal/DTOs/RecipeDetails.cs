@@ -9,12 +9,12 @@ namespace Foodie.Dal.DTOs
     public class RecipeDetails
     {
         public int Id { get; set; }
-      
-        public Category Category { get; set; }
-       
-        public TimeSpan PreparationTime { get; set; }
 
-        public TimeSpan CookingTime { get; set; }
+        public int Category { get; set; }
+
+        public int PreparationTime { get; set; }
+
+        public int CookingTime { get; set; }
 
         public string Name { get; set; }
 

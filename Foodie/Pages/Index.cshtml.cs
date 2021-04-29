@@ -64,6 +64,8 @@ namespace Foodie.Pages
 
         public void OnPost()
         {
+
+
             Specification.PageNumber = 1;
             SelectedCategoryFlags = GetCategoryFilter();
             HttpContext.Session.Set(SessionKeyCategories, GetCategoryFilter());

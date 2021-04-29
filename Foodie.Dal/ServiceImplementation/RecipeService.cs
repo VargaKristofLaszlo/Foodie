@@ -17,7 +17,7 @@ namespace Foodie.Dal.ServiceImplementation
         private readonly IMapper mapper;
 
         public RecipeService(FoodieDbContext context, IMapper mapper)
-        {           
+        {
             this.context = context;
             this.mapper = mapper;
         }
@@ -34,17 +34,19 @@ namespace Foodie.Dal.ServiceImplementation
           int pageSize,
           Func<Recipe, bool> filter)
         {
+
             var query = context.Recipes
                 .Where(filter)
-                .OrderBy(recipe => recipe.Name);            
+                .OrderBy(recipe => recipe.Name);
 
             var results = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .Select(r => mapper.Map<RecipePreview>(r))
-                .AsEnumerable();            
+                .AsEnumerable();
 
-            return new PagedResult<RecipePreview>() 
+
+            return new PagedResult<RecipePreview>()
             {
                 AllResultsCount = query.Count(),
                 PageNumber = pageNumber,

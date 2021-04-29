@@ -20,6 +20,8 @@ namespace Foodie.Dal.SeedService
 
         public async Task SeedUserAsync()
         {
+
+
             if (!(await userManager.GetUsersInRoleAsync(Roles.Roles.Administrator)).Any())
             {
                 var user = new User()

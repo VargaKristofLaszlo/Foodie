@@ -4,63 +4,105 @@
     ViewData["Title"] = "Home page";
 }
 
+
+
 <div class="row">
-    <div class="col-md-3">
-        <div class="pl-3">
-            <form method="POST">
-                <p>Categories</p>
-                @for (int i = 1; i < Model.Categories.Count(); i++)
-                {
-                    <div class="form-check form-switch pl-5">
+    <div class="small-screen">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <button class="navbar-toggler ml-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span><i class="bi bi-funnel-fill"></i></span>
+                </button>
+            </div>
+        </nav>
+        <div class="collapse" id="navbarToggleExternalContent">
+            <div class="bg-light p-4">
+                <form method="POST">
+                    <p>Categories</p>
+                    @for (int i = 1; i < Model.Categories.Count(); i++)
+                    {
+                        <div class="form-check form-switch pl-5">
+                            <input class="form-check-input" type="checkbox" id="@Model.Categories.ElementAt(i).ToString()"
+                                   value="@Model.Categories.ElementAt(i)" name="SelectedCategories"
+                                   checked="@Model.SelectedCategoryFlags.HasFlag(Model.Categories.ElementAt(i))">
+                            <label class="form-check-label" for="@Model.Categories.ElementAt(i).ToString()">@Model.Categories.ElementAt(i).ValueToString()</label>
+                        </div>
+                    }
+                    <p for="preparingTimeLimit" class="form-label pt-5">Preparing time limit in mins:</p>
+                    <div>
+                        <input type="range" value="@Model.PreparingTimeLimitInMinutes" min="0" max="200" step="5" oninput="this.nextElementSibling.value = this.value"
+                               name="PreparingTimeLimitInMinutes">
+                        <output for="PreparingTimeLimitInMinutes" onforminput="value = PreparingTimeLimitInMinutes.valueAsNumber">
+                            @Model.PreparingTimeLimitInMinutes
+                        </output>
+                    </div>
+                    <p for="cookingTimeLimit" class="form-label pt-5">Cooking time limit in mins:</p>
+                    <div>
+                        <input type="range" value="@Model.CookingTimeLimitInMinutes" min="0" max="200" step="5" oninput="this.nextElementSibling.value = this.value"
+                               name="CookingTimeLimitInMinutes">
+                        <output for="CookingTimeLimitInMinutes" onforminput="value = CookingTimeLimitInMinutes.valueAsNumber">
+                            @Model.CookingTimeLimitInMinutes
+                        </output>
+                    </div>
+                    <input type="submit" value="Search" />
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 pl-3 big-screen">
+        <form method="post">
+            <p>Categories</p>
+            @for (int i = 1; i < Model.Categories.Count(); i++)
+            {
+                <div class="form-check pl-5 form-switch">
+                    <label>
                         <input class="form-check-input" type="checkbox" id="@Model.Categories.ElementAt(i).ToString()"
                                value="@Model.Categories.ElementAt(i)" name="SelectedCategories"
                                checked="@Model.SelectedCategoryFlags.HasFlag(Model.Categories.ElementAt(i))">
-                        <label class="form-check-label" for="@Model.Categories.ElementAt(i).ToString()">@Model.Categories.ElementAt(i).ValueToString()</label>
-                    </div>
-                }
-                <p for="preparingTimeLimit" class="form-label pt-5">Preparing time limit in mins:</p>
-                <div>
-                    <input type="range" value="@Model.PreparingTimeLimitInMinutes" min="0" max="200" step="5" oninput="this.nextElementSibling.value = this.value"
-                           name="PreparingTimeLimitInMinutes">
-                    <output for="PreparingTimeLimitInMinutes" onforminput="value = PreparingTimeLimitInMinutes.valueAsNumber">
-                        @Model.PreparingTimeLimitInMinutes
-                    </output>
+                        @Model.Categories.ElementAt(i).ValueToString()
+                    </label>
                 </div>
-                <p for="cookingTimeLimit" class="form-label pt-5">Cooking time limit in mins:</p>
-                <div>
-                    <input type="range" value="@Model.CookingTimeLimitInMinutes" min="0" max="200" step="5" oninput="this.nextElementSibling.value = this.value"
-                           name="CookingTimeLimitInMinutes">
-                    <output for="CookingTimeLimitInMinutes" onforminput="value = CookingTimeLimitInMinutes.valueAsNumber">
-                        @Model.CookingTimeLimitInMinutes
-                    </output>
-                </div>
-                <input type="submit" value="Search" />
-            </form>
-        </div>
+            }
+            <p for="preparingTimeLimit" class="form-label pt-5">Preparing time limit in mins:</p>
+            <div>
+                <input type="range" value="@Model.PreparingTimeLimitInMinutes" min="0" max="200" step="5" oninput="this.nextElementSibling.value = this.value"
+                       name="PreparingTimeLimitInMinutes">
+                <output for="PreparingTimeLimitInMinutes" onforminput="value = PreparingTimeLimitInMinutes.valueAsNumber">
+                    @Model.PreparingTimeLimitInMinutes
+                </output>
+            </div>
+            <p for="cookingTimeLimit" class="form-label pt-5">Cooking time limit in mins:</p>
+            <div>
+                <input type="range" value="@Model.CookingTimeLimitInMinutes" min="0" max="200" step="5" oninput="this.nextElementSibling.value = this.value"
+                       name="CookingTimeLimitInMinutes">
+                <output for="CookingTimeLimitInMinutes" onforminput="value = CookingTimeLimitInMinutes.valueAsNumber">
+                    @Model.CookingTimeLimitInMinutes
+                </output>
+            </div>
+            <input type="submit" value="Search" />
+        </form>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-9 h-auto">
         @if (Model.RecipePreviews != null)
         {
             <div class="row">
-
                 @foreach (var recipe in Model.RecipePreviews.Results)
                 {
                     <div class="col-lg-4 mb-3 d-flex">
                         <div class="card w-100">
                             <div class="card-header text-center ">
                                 <a class="text-uppercase one-row b-5" asp-page="Recipe" asp-route-id="@recipe.Id">@recipe.Name</a>
-                                <h6>Preparation time:  @recipe.PreparationTime</h6>
-                                <h6>Cooking time:  @recipe.CookingTime</h6>
+                                <h6>Preparation time: @(new System.TimeSpan(0, 0, recipe.PreparationTime))</h6>
+                                <h6>Cooking time: @(new System.TimeSpan(0, 0, recipe.CookingTime))</h6>
                             </div>
-                            <div class="card-body p-3 d-flex align-items-center">
+                            <div class="card-body p-3 mx-auto">
                                 <a asp-page="Recipe" asp-route-id="@recipe.Id">
-                                    <img class="img-fluid" src="images//@(recipe.Id).PNG" alt="@recipe.Name" title="@recipe.Name" />
+                                    <img src="images//@(recipe.Id).PNG" alt="@recipe.Name" title="@recipe.Name" />
                                 </a>
                             </div>
                         </div>
                     </div>
                 }
-
             </div>
             <vc:pager page-size="Model.RecipePreviews.PageSize"
                       page-number="Model.RecipePreviews.PageNumber"

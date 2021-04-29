@@ -2,6 +2,7 @@
 using Foodie.BL.ServiceInterfaces;
 using Foodie.Dal.DTOs;
 using Foodie.Dal.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ namespace Foodie.Web.Controllers
 
         // POST api/<RecipeController>
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Post([FromBody] RecipeDetails recipeDetails)
         {
             await recipeLogic.InsertAsync(recipeDetails);
@@ -49,6 +51,7 @@ namespace Foodie.Web.Controllers
 
         // PUT api/<RecipeController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Put(int id, [FromBody] RecipeDetails recipeDetails)
         {
             await recipeLogic.UpdatesAsync(recipeDetails);
@@ -57,6 +60,7 @@ namespace Foodie.Web.Controllers
 
         // DELETE api/<RecipeController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int id)
         {
             await recipeLogic.DeleteAsync(id);

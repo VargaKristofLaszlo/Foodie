@@ -1,0 +1,55 @@
+﻿@page "/Admin/Modify/Recipes/{id?}"
+
+
+@model Foodie.Web.Pages.Admin.AddOrUpdateRecipeModel
+
+
+<div class="d-flex justify-content-center">
+
+    <form method="post">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="name_input">Name</label>
+                <input type="text" class="form-control" id="name_input" placeholder="Recipe name...">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="category_input">Category</label>
+                <select class="form-control" id="category_input">
+                    @for (int i = 1; i < Model.Categories.Count(); i++)
+                    {
+                        <option value="@Model.Categories.ElementAt(i)">@Model.Categories.ElementAt(i).ValueToString()</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="preparation_input">Preparation time</label>
+            <input type="time" step="1" class="form-control" id="preparation_input">
+        </div>
+        <div class="form-group">
+            <label for="cooking_input">Cooking time</label>
+            <input type="time" step="1" class="form-control" id="cooking_input">
+        </div>
+        <p>Ingredients</p>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="ingredient_name_input">Name</label>
+                <input type="text" class="form-control" id="ingredient_name_input">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="ingredient_measurement_input">Measurement</label>
+                <select id="ingredient_measurement_input" class="form-control">
+                    @for (int i = 1; i < Model.Measurements.Count(); i++)
+                    {
+                        <option value="@Model.Measurements.ElementAt(i)">@Model.Measurements.ElementAt(i).ValueToString()</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="ingredient_amount_input">Amoun</label>
+                <input type="number" class="form-control" id="ingredient_amount_input" min="0" value="1" step="0.01">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">@(Model.Recipe.Id == 0 ? "Add": "Edit")</button>
+    </form>
+</div>
