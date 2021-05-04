@@ -2,14 +2,57 @@
 @model Foodie.Web.Pages.RecipeModel
 @{
 }
-
+<p id="recipeId" class="d-none">@Model.Id</p>
 <div class="row">
     <div class="col-lg-3">
         <img src="~/images/@(Model.Id).PNG" title="@Model.RecipeDetails.Name" alt="@Model.RecipeDetails.Name" />
         <h6>Preparation time: @(new System.TimeSpan(0, 0, Model.RecipeDetails.PreparationTime))</h6>
         <h6>Cooking time: @(new System.TimeSpan(0, 0, Model.RecipeDetails.CookingTime))</h6>
+        <div id="star-rating"></div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <!-- Button trigger modal -->
+            <button type="button" class="feedbackButton" data-toggle="modal" data-target="#feedbackModal">
+                Add a new feedback
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="feedbackModalLabel">Give a new feedback</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="rate">
+                                <input type="radio" id="star5" name="rate" value="5" />
+                                <label for="star5" title="text">5 stars</label>
+                                <input type="radio" id="star4" name="rate" value="4" />
+                                <label for="star4" title="text">4 stars</label>
+                                <input type="radio" id="star3" name="rate" value="3" />
+                                <label for="star3" title="text">3 stars</label>
+                                <input type="radio" id="star2" name="rate" value="2" />
+                                <label for="star2" title="text">2 stars</label>
+                                <input type="radio" id="star1" name="rate" value="1" />
+                                <label for="star1" title="text">1 star</label>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <textarea class="col" id="comment_input" rows="2" onkeyup="KeyUpHandler(`comment_input`)"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="CommentAddButton">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
-    <div class="col-lg-9">
+    <div class="col-lg-9 mt-lg-5">
         <row>
             <row class="h-100">
                 <h2 class="my-auto">Ingredients:</h2>
@@ -22,7 +65,7 @@
                     </ul>
                 </div>
             </row>
-            <h2 class="pb-2">Instructions:</h2>
+            <h2 class="pb-2 mt-lg-5">Instructions:</h2>
             <div class="d-flex justify-content-center">
                 <ol>
                     @foreach (var instruction in Model.RecipeDetails.Instruction)
@@ -33,7 +76,206 @@
             </div>
         </row>
     </div>
+    <div class="row col-lg-6 ml-auto mr-auto pb-5">
+        <h2 class="my-auto">Feedbacks:</h2>
+        @if (Model.RecipeDetails.Ratings.Count() == 0)
+        {
+            <div class="row ml-5">
+                No feedbacks were given for this recipe yet.
+            </div>
+        }
+        @foreach (var feedback in Model.RecipeDetails.Ratings)
+        {
+            <div class="row">
+                <span class="w-auto"><b>@feedback.Username</b>&nbsp;</span>
+                @for (int i = 0; i < feedback.Value; i++)
+                {
+                    <span class="star-span"><i class="bi bi-star-fill"></i></span>
+                }
+                @for (int i = 0; i < 5 - feedback.Value; i++)
+                {
+                    <span class="star-span"><i class="bi bi-star"></i></span>
+                }
+            </div>
+            <div class="row comment ml-5">@feedback.Comment</div>
+        }
+    </div>
 </div>
+<style>
+    img {
+        width: 250px;
+        height: 350px;
+    }
+
+    i {
+        width: 20px;
+    }
+
+    .star-span {
+        padding: 1px;
+        margin: 0px;
+        width: 20px;
+    }
+
+    .feedbackButton {
+        box-shadow: 3px 4px 0px 0px #899599;
+        background: linear-gradient(to bottom, #ededed 5%, #bab1ba 100%);
+        background-color: #ededed;
+        border-radius: 15px;
+        border: 1px solid #d6bcd6;
+        display: inline-block;
+        cursor: pointer;
+        color: #3a8a9e;
+        font-family: Arial;
+        font-size: 17px;
+        padding: 7px 25px;
+        text-decoration: none;
+        text-shadow: 0px 1px 0px #e1e2ed;
+    }
+
+        .feedbackButton:hover {
+            background: linear-gradient(to bottom, #bab1ba 5%, #ededed 100%);
+            background-color: #bab1ba;
+        }
+
+        .feedbackButton:active {
+            position: relative;
+            top: 1px;
+        }
+
+    .rate {
+        float: left;
+        height: 46px;
+        padding: 0 10px;
+    }
+
+        .rate:not(:checked) > input {
+            position: absolute;
+            top: -9999px;
+        }
+
+        .rate:not(:checked) > label {
+            float: right;
+            width: 1em;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 30px;
+            color: #ccc;
+        }
+
+            .rate:not(:checked) > label:before {
+                content: '★ ';
+            }
+
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+</style>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+
+        function SendComment() {
+            let idOfCheckedInput = $(".rate input:checked").attr("id");
+
+            let numberOfStars = parseInt(idOfCheckedInput.replace("star", ""));
+            let comment = $("#comment_input").val();
+
+            let recipeId = parseInt($("#recipeId").text());
+
+            let url = `https://localhost:44394/api/recipe/${recipeId}/${numberOfStars}`;
+
+            let data = { "Text": comment };
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: JSON.stringify(data),
+                processData: false,
+                contentType: 'application/json',
+                success: function (result) {
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+        }
+
+        function KeyUpHandler(id) {
+
+            let selector = "#" + id;
+
+            if ($(selector).val().length > 0) {
+                $(selector).keyup(function () {
+                    $(selector).html(sanitize($(this).val()));
+                });
+            } else {
+                $(selector).val() = undefined;
+            }
+        }
+
+        function sanitize(string) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#x27;',
+                "/": '&#x2F;',
+            };
+            const reg = /[&<>"'/]/ig;
+            return string.replace(reg, (match) => (map[match]));
+        }
+
+        $(document).ready(function () {
+
+            document.getElementById("CommentAddButton").addEventListener("click", SendComment);
 
 
 
+            let recipeId = parseInt($("#recipeId").text());
+
+            let url = "https://localhost:44394/api/recipe/ratings/" + recipeId;
+
+            $.get(url, function (data, status) {
+
+                if (status == "success") {
+
+                    for (let i = 0; i < parseInt(data); i++) {
+                        $("#star-rating").append(`<span><i class="bi bi-star-fill"></i></span>`);
+                    }
+                    for (let i = 0; i < 5 - parseInt(data); i++) {
+                        $("#star-rating").append(`<span><i class="bi bi-star"></i></span>`);
+                    }
+
+                }
+                else {
+                    for (let i = 0; i < 5; i++) {
+
+                        $("#star-rating").append(`<span><i class="bi bi-star"></i></span>`);
+                    }
+                }
+            });
+        });
+    </script>
+
+}

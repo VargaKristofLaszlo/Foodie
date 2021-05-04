@@ -7,6 +7,7 @@ namespace Foodie.Dal.Entities
     {
         public ICollection<UserRecipe> FavouriteRecipes { get; set; } = new HashSet<UserRecipe>();
 
+        public ICollection<Rating> Ratings { get; set; } = new HashSet<Rating>();
         public bool Subscribed { get; set; }
     }
 }

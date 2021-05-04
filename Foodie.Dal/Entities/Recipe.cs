@@ -28,5 +28,6 @@ namespace Foodie.Dal.Entities
         public ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
         public ICollection<UserRecipe> Users { get; set; } = new HashSet<UserRecipe>();
+        public ICollection<Rating> Ratings { get; set; } = new HashSet<Rating>();
     }
 }

@@ -21,5 +21,7 @@ namespace Foodie.Dal.ServiceInterfaces
         Task UpdatesAsync(Recipe updatedRecipe);
 
         Task DeleteAsync(int id);
+        Task AddRatingAsync(int recipeId, int rating, int userId, string text);
+        Task<int> GetRecipeRating(int recipeId);
     }
 }

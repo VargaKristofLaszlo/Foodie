@@ -77,10 +77,26 @@ body {
     .big-screen {
         display: none;
     }
+
+    body div main div div table tbody tr td input.big-checkbox {
+        width: 10px;
+        height: 10px;
+    }
 }
 
 @media only screen and (min-device-width: 768px) {
     body .container main .row .small-screen {
         display: none;
     }
+
+    body div main div div table tbody tr td input.big-checkbox {
+        width: 20px;
+        height: 20px;
+    }
 }
+
+textarea {
+    height: 100%;
+    text-align: center;
+}
+

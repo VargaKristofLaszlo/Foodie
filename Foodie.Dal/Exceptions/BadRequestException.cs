@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Foodie.BL.Exceptions
+namespace Foodie.Dal.Exceptions
 {
-    public class UnAuthorizedUserException : Exception
+    public class BadRequestException : Exception
     {
-        public UnAuthorizedUserException()
+        public BadRequestException()
         {
         }
 
-        public UnAuthorizedUserException(string message)
+        public BadRequestException(string message)
             : base(message)
         {
         }
 
-        public UnAuthorizedUserException(string message, Exception inner)
+        public BadRequestException(string message, Exception inner)
             : base(message, inner)
         {
         }

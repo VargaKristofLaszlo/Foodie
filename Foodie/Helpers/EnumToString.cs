@@ -26,7 +26,7 @@ namespace Foodie.Web.Helpers
             switch (measurement)
             {
                 case Measurement.Piece:
-                    return string.Empty;
+                    return "piece";
                 case Measurement.Teaspoon:
                     return "tsp";
                 case Measurement.Dessertspoon:
@@ -50,7 +50,7 @@ namespace Foodie.Web.Helpers
                 case Measurement.Kilogram:
                     return "kg";
                 case Measurement.ToTaste:
-                    return "To taste";
+                    return "to taste";
                 case Measurement.Head:
                     return "head";
                 default:

@@ -20,7 +20,7 @@ namespace Foodie.Dal
         {
         }
 
-      
+
         public DbSet<Recipe> Recipes { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Foodie.Dal
         public DbSet<UserRecipe> UserRecipes { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -49,9 +49,23 @@ namespace Foodie.Dal
                 .HasForeignKey(ur => ur.RecipeId);
 
 
+            modelBuilder.Entity<Rating>()
+                .HasKey(ra => new { ra.RecipeId, ra.UserId });
+
+            modelBuilder.Entity<Rating>()
+                .HasOne(re => re.Recipe)
+                .WithMany(ra => ra.Ratings)
+                .HasForeignKey(re => re.RecipeId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Rating>()
+                .HasOne(us => us.User)
+                .WithMany(re => re.Ratings)
+                .HasForeignKey(us => us.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
 
             modelBuilder.Entity<Recipe>()
-                .OwnsMany(r => r.Ingredients);  
+                .OwnsMany(r => r.Ingredients);
 
             var splitStringConverter = new ValueConverter<ICollection<string>, string>(v => string.Join(";", v), v => v.Split(new[] { ';' }));
             modelBuilder.Entity<Recipe>().Property(nameof(Recipe.Instruction)).HasConversion(splitStringConverter);

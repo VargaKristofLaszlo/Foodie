@@ -1,55 +1,615 @@
 ﻿@page "/Admin/Modify/Recipes/{id?}"
 
-
 @model Foodie.Web.Pages.Admin.AddOrUpdateRecipeModel
 
 
-<div class="d-flex justify-content-center">
 
-    <form method="post">
+<div class="col-10 ml-auto mr-auto">
+
+    <form id="recipeForm" method="post" onsubmit="return false" enctype="multipart/form-data" role="form">
         <div class="form-row">
-            <div class="form-group col-md-6">
+            @if (Model.Id.HasValue)
+            {
+                <p id="recipeId" class="d-none">@Model.Id.Value</p>
+            }
+            else
+            {
+                <p id="recipeId" class="d-none">0</p>
+            }
+
+            <div class="form-group col-md-4">
                 <label for="name_input">Name</label>
-                <input type="text" class="form-control" id="name_input" placeholder="Recipe name...">
+                <textarea rows="2" class="form-control" id="name_input" name="RecipeName" onkeyup="KeyUpHandler(`name_input`)" required>@Model.Name</textarea>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group  col-md-3">
+                <input type="file" accept="image/png" name="inpFile" id="inpFile" />
+                <div class="image-preview" id="imagePreview">
+                    @if (Model.Id.HasValue)
+                    {
+                        <img src="/images/@(Model.Id.Value).PNG" alt="Image preview" class="image-preview__image d-block" />
+                        <span class="image-preview__default-text d-none">Image preview</span>
+                    }
+                    else
+                    {
+                        <img src="" alt="Image preview" class="image-preview__image" />
+                        <span class="image-preview__default-text">Image preview</span>
+                    }
+
+                </div>
+            </div>
+
+
+            <div class="form-group col-md-4 ml-auto">
                 <label for="category_input">Category</label>
-                <select class="form-control" id="category_input">
+                <div class="form-group" id="category_checkboxes">
                     @for (int i = 1; i < Model.Categories.Count(); i++)
                     {
-                        <option value="@Model.Categories.ElementAt(i)">@Model.Categories.ElementAt(i).ValueToString()</option>
+                        <div class="form-check form-switch pl-5">
+                            <input class="form-check-input" type="checkbox" id="@Model.Categories.ElementAt(i).ToString()"
+                                   value="@Model.Categories.ElementAt(i)"
+                                   checked="@Model.Category.HasFlag(Model.Categories.ElementAt(i))">
+                            <label class="form-check-label" for="@Model.Categories.ElementAt(i).ToString()">@Model.Categories.ElementAt(i).ValueToString()</label>
+                        </div>
                     }
-                </select>
+                </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group w-50 ml-auto mr-auto">
             <label for="preparation_input">Preparation time</label>
-            <input type="time" step="1" class="form-control" id="preparation_input">
+            <input type="time" step="1" class="form-control" id="preparation_input" name="timeInput" value="@Model.PreparationTime">
         </div>
-        <div class="form-group">
+        <div class="form-group  w-50 ml-auto mr-auto">
             <label for="cooking_input">Cooking time</label>
-            <input type="time" step="1" class="form-control" id="cooking_input">
+            <input type="time" step="1" class="form-control " id="cooking_input" name="timeInput" value="@Model.CookingTime">
         </div>
-        <p>Ingredients</p>
         <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="ingredient_name_input">Name</label>
-                <input type="text" class="form-control" id="ingredient_name_input">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="ingredient_measurement_input">Measurement</label>
-                <select id="ingredient_measurement_input" class="form-control">
-                    @for (int i = 1; i < Model.Measurements.Count(); i++)
-                    {
-                        <option value="@Model.Measurements.ElementAt(i)">@Model.Measurements.ElementAt(i).ValueToString()</option>
-                    }
-                </select>
-            </div>
-            <div class="form-group col-md-2">
-                <label for="ingredient_amount_input">Amoun</label>
-                <input type="number" class="form-control" id="ingredient_amount_input" min="0" value="1" step="0.01">
-            </div>
+            <span>
+                <label>
+                    Ingredients   <i class="bi bi-plus-circle pl-3 pr-3" onclick="addRowToIngredients('ingredient_table')"></i>
+                    <i class="bi bi-dash-circle" onclick="deleteRowFromIngredients('ingredient_table')"></i>
+                </label>
+            </span>
         </div>
-        <button type="submit" class="btn btn-primary">@(Model.Recipe.Id == 0 ? "Add": "Edit")</button>
+        <div class="form-row">
+            <table id="ingredient_table" class="ml-auto mr-auto">
+                <thead>
+                    <tr class="text-center">
+                        <td></td>
+                        <td>Name</td>
+                        <td>Amount</td>
+                        <td>Category</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tbody>
+                    @foreach (var ingredient in Model.Ingredients)
+                    {
+                        <tr>
+                            <td class="p-lg-3"><input type="checkbox" class="big-checkbox" name="ingredient_selected" /></td>
+                            <td class="p-lg-3 p-sm-0 col-5">
+                                <input class="form-control" type="text" value="@ingredient.Name" name="ingredient_name" required>
+                            </td>
+                            <td class="p-lg-3 p-sm-0 col-4 col-lg-2">
+                                @if (ingredient.Amount.HasValue)
+                                {
+                                    <input class="form-control" type="text" value="@(ingredient.Amount.Value.ToString("G", System.Globalization.CultureInfo.InvariantCulture))" name="ingredient_amount" pattern="^\d*\.?\d*$" title="The amount must be an integer or a decimal seperated by a decimal point!">
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="text" value="@ingredient.Amount" name="ingredient_amount">
+                                }
+                            </td>
+                            <td class="p-lg-3 col-3 p-sm-0">
+                                <select id="@($"measurement_select{Model.SelectionIdWithIncrement}")" class="form-control">
+                                    @for (int i = 0; i < Model.Measurements.Count(); i++)
+                                    {
+                                        if (Model.Measurements.ElementAt(i) == ingredient.Measurement)
+                                        {
+                                            <option class="form-text" value="@Model.Measurements.ElementAt(i)" selected>@Model.Measurements.ElementAt(i).ValueToString()</option>
+                                        }
+                                        else
+                                        {
+                                            <option class="form-text" value="@Model.Measurements.ElementAt(i)">@Model.Measurements.ElementAt(i).ValueToString()</option>
+                                        }
+
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Id.HasValue == false)
+                    {
+                        <tr>
+                            <td class="p-3"><input type="checkbox" class="big-checkbox" name="ingredient_selected" /></td>
+                            <td class="p-3">
+                                <input class="form-control" name="ingredient_name" type="text" required>
+                            </td>
+                            <td class="p-3">
+                                <input class="form-control" name="amount" type="text" id="@($"measurement_amount")" pattern="^\d*\.?\d*$" title="The amount must be an integer or a decimal seperated by a decimal point!">
+                            </td>
+                            <td class="p-3">
+                                <select class="form-control" id="@($"measurement_select{Model.SelectionIdWithIncrement}")">
+                                    @for (int i = 0; i < Model.Measurements.Count(); i++)
+                                    {
+                                        <option class="form-text" value="Model.Measurements.ElementAt(i)">@Model.Measurements.ElementAt(i).ValueToString()</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="form-row">
+            <span>
+                <label>
+                    Instructions   <i class="bi bi-plus-circle pl-3 pr-3" onclick="addRowToInstruction('instruction_table')"></i>
+                    <i class="bi bi-dash-circle" onclick="deleteRowFromInstructions('instruction_table')"></i>
+                </label>
+            </span>
+        </div>
+        <div class="form-row">
+            <table id="instruction_table" class="ml-auto mr-auto col-12">
+                <thead>
+                    <tr class="text-center">
+                        <td></td>
+                        <td>Step</td>
+                        <td>Description</td>
+                    </tr>
+                </thead>
+                <tbody class="form-group">
+                    @foreach (var instruction in Model.Instructions)
+                    {
+                        <tr>
+                            <td class="p-3"><input type="checkbox" class="big-checkbox" name="chk" /></td>
+                            <td class="col-lg-1 col-3"><input type="number" class="form-control text-center" readonly value="@(Model.Instructions.IndexOf(instruction) + 1)" /></td>
+                            <td class="p-3 col-lg-10 col-9"><textarea class="form-control" rows="4" id="instraction_1" onkeyup="KeyUpHandler(`instraction_1`)" required>@instruction</textarea></td>
+                        </tr>
+                    }
+                    @if (Model.Instructions.Count() == 0)
+                    {
+                        <tr>
+                            <td class="p-3"><input type="checkbox" class="big-checkbox" name="chk" /></td>
+                            <td class="col-lg-1 col-3"><input type="number" class="form-control text-center" readonly value="1" /></td>
+                            <td class="p-3 col-lg-10 col-9"><textarea class="form-control" id="instraction_1" onkeyup="KeyUpHandler(`instraction_1`)" rows="4" required></textarea></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mb-5 mt-2">
+            <!-- Flexbox container for aligning the toasts -->
+            <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100">
+
+                <!-- Then put toasts within -->
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-body">
+                        Recipe @(Model.Id.HasValue ? "edited" : "created").
+                    </div>
+                </div>
+            </div>
+            <button id="submitButton" type="submit" class="btn btn-primary">@(Model.Id.HasValue ? "Edit": "Add")</button>
+            <button type="button" class="btn btn-danger">Cancel</button>
+        </div>
     </form>
 </div>
+
+
+
+
+<style>
+
+    .image-preview {
+        width: 300px;
+        min-height: 100px;
+        border: 2px solid #dddddd;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: lightgray;
+    }
+
+    .image-preview__image {
+        display: none;
+        width: 100%;
+    }
+</style>
+
+
+
+@section Scripts
+{
+
+
+    <script type="text/javascript">
+
+        var base64EncodedImage;
+
+        const inpFile = document.getElementById("inpFile");
+        const previewContainer = document.getElementById("imagePreview");
+        const previewImage = previewContainer.querySelector(".image-preview__image");
+        const previewDefaultText = previewContainer.querySelector(".image-preview__default-text");
+
+        inpFile.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                previewDefaultText.style.display = "none";
+                previewImage.style.display = "block";
+
+                reader.addEventListener("load", function () {
+                    previewImage.setAttribute("src", this.result);
+                });
+
+                reader.readAsDataURL(file);
+
+                getBase64(file).then(
+                    data => {
+                        //    console.log(data);
+                        base64EncodedImage = data;
+                        //  console.log(base64EncodedImage);
+                    }
+                );
+            }
+            else {
+                previewDefaultText.style.display = null;
+                previewImage.style.display = null;
+                previewImage.setAttribute("src", "");
+            }
+        });
+
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+
+
+
+        function addRowToInstruction(tableID) {
+            let table = document.getElementById(tableID);
+
+            let rowCount = table.rows.length;
+            let row = table.insertRow(rowCount);
+
+            let colCount = table.rows[0].cells.length;
+
+            for (let i = 0; i < colCount; i++) {
+
+                let newcell = row.insertCell(i);
+
+                newcell.className = 'p-3';
+
+
+                if (i % 3 == 0) {
+                    newcell.innerHTML= `<input type="checkbox" class="big-checkbox" name="chk"/>`;
+                }
+
+                if (i % 3 == 2) {
+                    newcell.innerHTML = `<textarea required class="form-control" id="instraction_${rowCount}" onkeyup="KeyUpHandler("instraction_${rowCount}")" rows="4"></textarea>`;
+                }
+
+                if (i % 3 == 1) {
+                    newcell.innerHTML = `<input type="number" class="form-control text-center" readonly value="${rowCount}" />`
+                }
+            }
+        }
+
+        function addRowToIngredients(tableID) {
+
+            if (window.value == undefined) {
+                window.value = @Model.SelectionId;
+            }
+
+
+            let table = document.getElementById(tableID);
+
+            let rowCount = table.rows.length;
+            let row = table.insertRow(rowCount);
+
+            let colCount = table.rows[0].cells.length;
+
+            for (var i = 0; i < colCount; i++) {
+
+                var newcell = row.insertCell(i);
+
+                newcell.className = 'p-3';
+
+                if (i % colCount == 0) {
+                    newcell.innerHTML = `<input type="checkbox" class="big-checkbox" name="chk" />`
+                }
+
+                if (i % colCount == 1) {
+                    newcell.innerHTML = `<input required class="form-control" type="text" value="">`;
+                }
+                if (i % colCount == 2) {
+                    newcell.innerHTML = ` <input class="form-control" type="text" value="0.0" pattern="^\d*\.?\d*$" title="The amount must be an integer or a decimal seperated by a decimal point!">`;
+                }
+
+                if (i == colCount - 1)
+                {
+                    if (tableID === 'ingredient_table') {
+                        newcell.innerHTML = `<select id="measurement_select${window.value++}" class="form-control">
+                                    @for (int i = 0; i < Model.Measurements.Count(); i++)
+                                    {
+                                       <option class="form-text" value="@Model.Measurements.ElementAt(i)">@Model.Measurements.ElementAt(i).ValueToString()</option>
+                                    }
+                                </select>`;
+                    }
+                }
+            }
+        }
+
+        function deleteRowFromIngredients(tableID) {
+            try {
+                 if (window.value == undefined) {
+                     window.value = @Model.SelectionId;
+                 }
+
+                let table = document.getElementById(tableID);
+                let rowCount = table.rows.length;
+
+                for (let i = 0; i < rowCount; i++) {
+                    let row = table.rows[i];
+                    let chkbox = row.cells[0].childNodes[0];
+                    if (null != chkbox && true == chkbox.checked) {
+                        if (i == 1) {
+                            alert("You can not delete the first row");
+                            break;
+                        }
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
+                        window.value--;
+                    }
+                }
+
+                for (let i = 1; i < table.rows.length; i++) {
+                    var row = table.rows[i];
+                    let selectInnerHtml = row.cells[3].innerHTML;
+                    let originalIdString = selectInnerHtml.split('"')[1];
+                    let idString = originalIdString.replace(/\d+/g, '');
+                    idString += (i - 1);
+                    selectInnerHtml = selectInnerHtml.replace(originalIdString, idString);
+                    row.cells[3].innerHTML = selectInnerHtml;
+                }
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        function deleteRowFromInstructions(tableID) {
+            try {
+                window.value--;
+
+                let table = document.getElementById(tableID);
+                let rowCount = table.rows.length;
+
+                for (let i = 0; i < rowCount; i++) {
+                    let row = table.rows[i];
+                    let chkbox = row.cells[0].childNodes[0];
+                    if (null != chkbox && true == chkbox.checked) {
+                        if (i == 1) {
+                            alert("You can not delete the first row");
+                            break;
+                        }
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
+                    }
+                }
+                for (let i = 0; i < rowCount; i++) {
+                    let row = table.rows[i];
+                    let stepInput = row.cells[1].childNodes[0];
+                    stepInput.value = i;
+                }
+
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+        function sanitize(string) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#x27;',
+                "/": '&#x2F;',
+            };
+            const reg = /[&<>"'/]/ig;
+            return string.replace(reg, (match) => (map[match]));
+        }
+
+        function KeyUpHandler(id) {
+
+            let selector = "#" + id;
+
+            if ($(selector).val().length > 0) {
+                $(selector).keyup(function () {
+                    $(selector).html(sanitize($(this).val()));
+                });
+            } else {
+                $(selector).val() = undefined;
+            }
+        }
+
+
+        $("#submitButton").click(function () {
+
+            let name = $("#name_input").text();
+
+            let preparationTime = document.getElementById("preparation_input").value;
+
+            let cookingTime = document.getElementById("cooking_input").value;
+
+            let categoryDiv = $("#category_checkboxes");
+            let categoryCheckboxes = categoryDiv.find("input");
+
+            let categoryValues = [];
+            categoryCheckboxes.each(function () {
+                categoryValues.push(this.checked == true ? 1 : 0);
+            });
+
+            let ingredientTable = $("#ingredient_table");
+            let ingredients = [];
+            let ingredient_name;
+            let ingredient_amount;
+            let selected_measurement;
+
+            let selectId = 0;
+
+            ingredientTable.find("input").each(function (index) {
+
+                if (index % 3 === 1) {
+                    ingredient_name = this.value;
+                }
+
+                if (index % 3 === 2) {
+                    ingredient_amount = this.value;
+                    if (ingredient_amount == undefined || ingredient_amount == "")
+                        ingredient_amount = "0.0";
+                }
+
+                if (ingredient_name != undefined && ingredient_amount != undefined) {
+
+                    selected_measurement = GetMeasurementValue($(`#measurement_select${selectId} option:selected`).text());
+                    selectId++;
+
+                    ingredients.push({ Name: ingredient_name, Measurement: selected_measurement, Amount: parseFloat(ingredient_amount.replace(',','.')) });
+                    ingredient_name = undefined;
+                    ingredient_amount = undefined;
+                    selected_measurement = undefined;
+                }
+            });
+
+            let instructionTable = $("#instruction_table");
+            let instructions = [];
+
+
+            instructionTable.find("textarea").each(function () {
+                instructions.push(this.value);
+            });
+
+
+
+
+            if (name.length < 1)
+                return;
+
+            if (ConvertToInt(preparationTime) < 1)
+                return;
+
+            if (ConvertToInt(cookingTime) < 1)
+                return;
+
+            instructions.forEach(i =>
+            {
+                if (i.length < 1)
+                    return;
+            });
+
+            ingredients.forEach(i => {
+                if (i.Name.length < 1)
+                    return;
+            });
+
+
+
+
+            let data = {
+                "Id": parseInt($("#recipeId").text()), "Category": ConvertArrayToFinalCategory(categoryValues),
+                "PreparationTime": ConvertToInt(preparationTime), "CookingTime": ConvertToInt(cookingTime),
+                "Name": name, "Ingredients": ingredients,
+                "Instruction": instructions,
+                "Image": base64EncodedImage
+            };
+
+
+                if (parseInt($("#recipeId").text()) > 0) {
+                    $.ajax({
+                        url: 'https://localhost:44394/api/recipe',
+                        method: 'PUT',
+                        data: JSON.stringify(data),
+                        dataType: 'json',
+                        processData: false,
+                        contentType: 'application/json',
+                        success: function (result) {
+                            $(document).ready(function () {
+                                $('.toast').toast('show');
+                            });
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: 'https://localhost:44394/api/recipe',
+                        method: 'POST',
+                        data: JSON.stringify(data),
+                        processData: false,
+                        contentType: 'application/json',
+                        success: function (result) {
+                            $(document).ready(function () {
+                                $('.toast').toast('show');
+                            });
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+               }
+
+        })
+
+
+
+        function GetMeasurementValue(measurement_type) {
+            if (measurement_type == "piece") return 0;
+            if (measurement_type == "tsp") return 1;
+            if (measurement_type == "dstspn") return 2;
+            if (measurement_type == "tbsp") return 3;
+            if (measurement_type == "ounce") return 4;
+            if (measurement_type == "cup") return 5;
+            if (measurement_type == "pint") return 6;
+            if (measurement_type == "quart") return 7;
+            if (measurement_type == "gallon") return 8;
+            if (measurement_type == "can") return 9;
+            if (measurement_type == "jar") return 10;
+            if (measurement_type == "kg") return 11;
+            if (measurement_type == "to taste") return 12;
+            if (measurement_type == "head") return 13;
+        }
+
+        function ConvertArrayToFinalCategory(intArray) {
+            let result = 0;
+            for (let i = 0; i < intArray.length; i++) {
+                result += Math.pow(2, i) * intArray[i];
+            }
+            return result;
+        }
+
+        function ConvertToInt(time) {
+            let hour = parseInt(time.split(":")[0]);
+            let min = parseInt(time.split(":")[1]);
+            let seconds = parseInt(time.split(":")[2]);
+
+            return parseInt(hour * 3600 + min * 60 + seconds);
+        }
+
+
+
+    </script>
+}

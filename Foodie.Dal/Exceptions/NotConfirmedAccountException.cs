@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Foodie.BL.Exceptions
+namespace Foodie.Dal.Exceptions
 {
     public class NotConfirmedAccountException : Exception
     {

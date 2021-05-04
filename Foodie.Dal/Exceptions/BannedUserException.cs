@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Foodie.BL.Exceptions
+namespace Foodie.Dal.Exceptions
 {
-    public class BadRequestException : Exception
+    public class BannedUserException : Exception
     {
-        public BadRequestException()
+        public BannedUserException()
         {
         }
 
-        public BadRequestException(string message)
+        public BannedUserException(string message)
             : base(message)
         {
         }
 
-        public BadRequestException(string message, Exception inner)
+        public BannedUserException(string message, Exception inner)
             : base(message, inner)
         {
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Foodie.Dal.DTOs;
 using Foodie.Dal.Entities;
+using Foodie.Dal.Exceptions;
 using Foodie.Dal.ServiceInterfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,6 +22,48 @@ namespace Foodie.Dal.ServiceImplementation
             this.context = context;
             this.mapper = mapper;
         }
+
+        public async Task AddRatingAsync(int recipeId, int rating, int userId, string text)
+        {
+            if (rating < 0)
+                rating = 0;
+
+            if (rating > 5)
+                rating = 5;
+
+
+            var recipe = await this.context.Recipes.FirstOrDefaultAsync(x => x.Id.Equals(recipeId));
+            if (recipe == null)
+                throw new NotFoundException();
+
+            var user = await this.context.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            if (user == null)
+                throw new NotFoundException();
+
+            recipe.Ratings.Add(new Rating
+            {
+                User = user,
+                UserId = user.Id,
+                Recipe = recipe,
+                RecipeId = recipe.Id,
+                Value = rating,
+                Comment = text
+            });
+
+            if (rating > 3)
+            {
+                user.FavouriteRecipes.Add(new UserRecipe()
+                {
+                    Recipe = recipe,
+                    RecipeId = recipe.Id,
+                    User = user,
+                    UserId = user.Id
+                });
+            }
+
+            await context.SaveChangesAsync();
+        }
+
 
         public async Task DeleteAsync(int id)
         {
@@ -57,8 +100,43 @@ namespace Foodie.Dal.ServiceImplementation
 
         public async Task<Recipe> GetAsync(int id)
         {
-            return await context.Recipes
-                .FindAsync(id);
+            var res = await context.Recipes
+                .Include(x => x.Ratings)
+                .ThenInclude(r => r.User)
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
+
+
+            if (res == null)
+                throw new NotFoundException();
+
+            return res;
+        }
+
+        public async Task<int> GetRecipeRating(int recipeId)
+        {
+            var recipe = await context.Recipes
+                .Include(r => r.Ratings)
+                .FirstOrDefaultAsync(x => x.Id.Equals(recipeId));
+
+            if (recipe == null)
+                throw new NotFoundException();
+
+            await context.SaveChangesAsync();
+
+            int sum = 0;
+            int count = 0;
+
+            foreach (var rating in recipe.Ratings)
+            {
+                sum += rating.Value;
+                count += 1;
+            }
+
+            if (sum == 0 || count == 0)
+                return 0;
+
+            return (int)Math.Floor((double)sum / count);
+
         }
 
         public async Task InsertAsync(Recipe recipeToInsert)
@@ -66,6 +144,7 @@ namespace Foodie.Dal.ServiceImplementation
             await context.Recipes.AddAsync(recipeToInsert);
 
             await context.SaveChangesAsync();
+
         }
 
         public async Task UpdatesAsync(Recipe updatedRecipe)

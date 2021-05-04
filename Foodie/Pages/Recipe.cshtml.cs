@@ -16,7 +16,7 @@ namespace Foodie.Web.Pages
         [BindProperty(SupportsGet = true)]
         public int Id { get; set; }
 
-        public RecipeDetails RecipeDetails { get; set; }
+        public RecipeDetailsWithRatings RecipeDetails { get; set; }
 
         public RecipeModel(IRecipeApi recipeApi)
         {

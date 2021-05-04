@@ -13,8 +13,6 @@ using AutoMapper;
 using Foodie.Dal.MapperProfiles;
 using Foodie.Dal.ServiceImplementation;
 using Foodie.Dal.ServiceInterfaces;
-using Foodie.BL.LogicImplementations;
-using Foodie.BL.ServiceInterfaces;
 using Refit;
 using Foodie.Web.IApi;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -22,13 +20,16 @@ using Foodie.Web.Helpers;
 using Hellang.Middleware.ProblemDetails;
 using System;
 using Microsoft.AspNetCore.Http;
-using Foodie.BL.Exceptions;
 using System.Net.Http;
 using Hangfire;
 using Hangfire.SqlServer;
 using Hangfire.Common;
 using System.Linq;
 using System.Text.Encodings.Web;
+using Microsoft.OpenApi.Models;
+using Foodie.Dal.Exceptions;
+using Foodie.BL.Interfaces;
+using Foodie.BL.Implementations;
 
 namespace Foodie
 {
@@ -48,6 +49,24 @@ namespace Foodie
             {
                 options.UseSqlServer(Configuration.GetConnectionString(nameof(FoodieDbContext)));
             });
+
+
+
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = "Foodie Api",
+                        Description = "Webportálok nevû tárgyra készített házim Api-ja.",
+                        Version = "v1.0"
+                    });
+                options.EnableAnnotations();
+            });
+
+
+
 
 
             // Add Hangfire services.
@@ -95,12 +114,14 @@ namespace Foodie
             {
                 config.AddProfile(new IngredientProfile());
                 config.AddProfile(new RecipeProfile());
+                config.AddProfile(new RatingProfile());
             }).CreateMapper());
 
 
+
             services.AddRefitClient<IRecipeApi>()
-            //     .ConfigureHttpClient(c => c.BaseAddress = new System.Uri("https://localhost:44394/api/Recipe"));
-               .ConfigureHttpClient(c => c.BaseAddress = new System.Uri("https://localhost:5001/api/Recipe"));
+                  .ConfigureHttpClient(c => c.BaseAddress = new System.Uri("https://localhost:44394/api/Recipe"));
+            // .ConfigureHttpClient(c => c.BaseAddress = new System.Uri("https://localhost:5001/api/Recipe"));
 
             services.AddProblemDetails(opt =>
             {
@@ -127,6 +148,8 @@ namespace Foodie
                 // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
                 opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
             });
+
+            services.AddLogging();
 
             services.AddDistributedMemoryCache();
 
@@ -163,6 +186,12 @@ namespace Foodie
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "StrategyGame Web API V1");
+            });
 
             app.UseHangfireDashboard();
 

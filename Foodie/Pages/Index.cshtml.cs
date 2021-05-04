@@ -1,5 +1,4 @@
-﻿using Foodie.BL.ServiceInterfaces;
-using Foodie.Dal.DTOs;
+﻿using Foodie.Dal.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using static Foodie.Web.ViewComponents.PagerViewComponent;
@@ -11,6 +10,7 @@ using System.Linq;
 using Foodie.Web.Helpers;
 using System.Threading.Tasks;
 using Foodie.Web.IApi;
+using Foodie.BL.Interfaces;
 
 namespace Foodie.Pages
 {

@@ -1,12 +1,8 @@
 ﻿using Foodie.BL.Models;
 using Foodie.Dal.DTOs;
-using Foodie.Dal.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Foodie.BL.ServiceInterfaces
+namespace Foodie.BL.Interfaces
 {
     public interface IRecipeLogic
     {
@@ -14,10 +10,12 @@ namespace Foodie.BL.ServiceInterfaces
 
         public PagedResult<RecipePreview> Get(RecipeGetFilter filter);
 
-        Task<RecipeDetails> GetAsync(int id);
+        Task<RecipeDetailsWithRatings> GetAsync(int id);
 
         Task UpdatesAsync(RecipeDetails updatedRecipe);
 
         Task DeleteAsync(int id);
+        Task RateRecipe(int recipeId, int rating, int userId, Comment comment);
+        Task<int> GetRecipeRating(int recipeId);
     }
 }

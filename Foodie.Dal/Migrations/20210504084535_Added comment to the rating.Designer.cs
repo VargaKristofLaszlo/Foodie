@@ -4,14 +4,16 @@ using Foodie.Dal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Foodie.Dal.Migrations
 {
     [DbContext(typeof(FoodieDbContext))]
-    partial class FoodieDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210504084535_Added comment to the rating")]
+    partial class Addedcommenttotherating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

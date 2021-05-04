@@ -32,6 +32,16 @@ namespace Foodie.Dal.MapperProfiles
             ;
 
 
+            this.CreateMap<Recipe, RecipeDetailsWithRatings>()
+                 .ForMember(details => details.Id, mapper => mapper.MapFrom(recipe => recipe.Id))
+                .ForMember(details => details.Category, mapper => mapper.MapFrom(recipe => (int)recipe.Category))
+                .ForMember(details => details.PreparationTime, mapper => mapper.MapFrom(recipe => recipe.PreparationTime.TotalSeconds))
+                .ForMember(details => details.CookingTime, mapper => mapper.MapFrom(recipe => recipe.CookingTime.TotalSeconds))
+                .ForMember(details => details.Name, mapper => mapper.MapFrom(recipe => recipe.Name))
+                .ForMember(details => details.Ingredients, mapper => mapper.MapFrom(recipe => recipe.Ingredients))
+                .ForMember(details => details.Instruction, mapper => mapper.MapFrom(recipe => recipe.Instruction))
+                .ForMember(details => details.Ratings, mapper => mapper.MapFrom(recipe => recipe.Ratings));
+
 
             this.CreateMap<Recipe, RecipePreview>()
                 .ForMember(preview => preview.CookingTime, mapper => mapper.MapFrom(recipe => recipe.CookingTime.TotalSeconds))
